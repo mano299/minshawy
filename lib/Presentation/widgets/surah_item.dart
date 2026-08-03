@@ -97,6 +97,10 @@ class SurahItem extends StatelessWidget {
               InkWell(
                 borderRadius: BorderRadius.circular(12),
                 onTap: () {
+                  final audioCubit = context.read<AudioCubit>();
+
+                  audioCubit.setPlaylist(audioCubit.surahs);
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(

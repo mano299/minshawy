@@ -24,28 +24,22 @@ class AudioCubit extends Cubit<AudioState> {
   SurahModel? currentSurah;
   bool repeatOne = false;
 
-  List<SurahModel> surahs = [];List<SurahModel> currentPlaylist = [];void setPlaylist(List<SurahModel> playlist) {
+  List<SurahModel> surahs = [];
+  List<SurahModel> currentPlaylist = [];
+
+  void setPlaylist(List<SurahModel> playlist) {
     currentPlaylist = playlist;
   }
+
   bool autoPlayNext = true;
 
   void toggleAutoPlay() {
     autoPlayNext = !autoPlayNext;
 
     if (player.state.playing) {
-      emit(
-        AudioPlaying(
-          position: _position,
-          duration: _duration,
-        ),
-      );
+      emit(AudioPlaying(position: _position, duration: _duration));
     } else {
-      emit(
-        AudioPaused(
-          position: _position,
-          duration: _duration,
-        ),
-      );
+      emit(AudioPaused(position: _position, duration: _duration));
     }
   }
 
@@ -99,7 +93,6 @@ class AudioCubit extends Cubit<AudioState> {
   }
 
   Future<void> loadAudio(SurahModel surah, {String? source}) async {
-    
     try {
       if (currentSurah?.id == surah.id &&
           player.state.duration > Duration.zero) {
@@ -128,12 +121,15 @@ class AudioCubit extends Cubit<AudioState> {
 
       _duration = player.state.duration;
 
-      if (lastPosition > Duration.zero) {
+      if (lastPosition > Duration.zero &&
+          lastPosition < _duration - const Duration(seconds: 10)) {
         await player.seek(lastPosition);
 
         await Future.delayed(const Duration(milliseconds: 300));
 
         _position = player.state.position;
+      } else {
+        await clearLastPosition(surah.id!);
       }
 
       _listenStreams();
@@ -185,7 +181,9 @@ class AudioCubit extends Cubit<AudioState> {
 
     _completedSub = player.stream.completed.listen((completed) async {
       if (!completed) return;
-
+      if (currentSurah?.id != null) {
+        await clearLastPosition(currentSurah!.id!);
+      }
       if (repeatOne) {
         await player.seek(Duration.zero);
         await player.play();
@@ -197,21 +195,21 @@ class AudioCubit extends Cubit<AudioState> {
       } else {
         await player.pause();
 
-        emit(
-          AudioPaused(
-            position: _duration,
-            duration: _duration,
-          ),
-        );
+        emit(AudioPaused(position: _duration, duration: _duration));
       }
     });
+  }
+
+  Future<void> clearLastPosition(int surahId) async {
+    final box = Hive.box('settings');
+    await box.delete('position_$surahId');
   }
 
   Future<void> playNextSurah() async {
     if (currentSurah == null || currentPlaylist.isEmpty) return;
 
     final currentIndex = currentPlaylist.indexWhere(
-          (e) => e.id == currentSurah!.id,
+      (e) => e.id == currentSurah!.id,
     );
 
     if (currentIndex == -1) return;
@@ -225,6 +223,7 @@ class AudioCubit extends Cubit<AudioState> {
     await loadAudio(nextSurah);
     await play();
   }
+
   Future<void> play() async {
     await player.play();
     // await NotificationService.showPlayerNotification(
@@ -242,33 +241,16 @@ class AudioCubit extends Cubit<AudioState> {
   }
 
   Future<void> seek(Duration duration) async {
-    emit(
-      AudioBuffering(
-        position: _position,
-        duration: _duration,
-      ),
-    );
+    emit(AudioBuffering(position: _position, duration: _duration));
 
     await player.seek(duration);
 
-    await player.stream.buffering.firstWhere(
-          (buffering) => buffering == false,
-    );
+    await player.stream.buffering.firstWhere((buffering) => buffering == false);
 
     if (player.state.playing) {
-      emit(
-        AudioPlaying(
-          position: player.state.position,
-          duration: _duration,
-        ),
-      );
+      emit(AudioPlaying(position: player.state.position, duration: _duration));
     } else {
-      emit(
-        AudioPaused(
-          position: player.state.position,
-          duration: _duration,
-        ),
-      );
+      emit(AudioPaused(position: player.state.position, duration: _duration));
     }
   }
 
