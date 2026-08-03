@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../core/constants.dart';
+import '../../data/url_launcher.dart';
 
 class ContactUs extends StatelessWidget {
   const ContactUs({super.key});
@@ -32,7 +33,11 @@ class ContactUs extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  launchUrlLink(
+                    'https://www.linkedin.com/in/muhammedahmedabdelhadi',
+                  );
+                },
                 icon: FaIcon(
                   FontAwesomeIcons.squareLinkedin,
                   color: Color(0xff0A66C2),
@@ -41,6 +46,11 @@ class ContactUs extends StatelessWidget {
               ),
               SizedBox(width: 4),
               InkWell(
+                onTap: () {
+                  launchUrlLink(
+                    'mailto:muhammed.abdelhadi9@gmail.com',
+                  );
+                },
                 splashColor: primaryColor,
                 child: SvgPicture.asset(
                   'assets/images/google.svg',
@@ -50,7 +60,11 @@ class ContactUs extends StatelessWidget {
               ),
               SizedBox(width: 4),
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  launchUrlLink(
+                    'https://wa.me/201090820457',
+                  );
+                },
                 icon: FaIcon(
                   FontAwesomeIcons.squareWhatsapp,
                   color: Colors.green,

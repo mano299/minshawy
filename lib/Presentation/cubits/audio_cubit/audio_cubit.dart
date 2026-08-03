@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:media_kit/media_kit.dart';
 
-import '../../../data/notifications_service.dart';
 import '../../../models/surah_model.dart';
 
 part 'audio_state.dart';
