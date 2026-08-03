@@ -152,7 +152,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
 
                               return ListView.separated(
                                 itemCount: filteredSuras.length,
-                                separatorBuilder: (_, __) =>
+                                separatorBuilder: (_, _) =>
                                 const SizedBox(height: 12),
                                 itemBuilder: (context, index) {
                                   return SurahItem(

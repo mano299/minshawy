@@ -28,13 +28,13 @@ class SurahModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['ayahCount'] = this.ayahCount;
-    data['isMakki'] = this.isMakki;
-    data['audioUrl'] = this.audioUrl;
-    data['duration'] = this.duration;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['ayahCount'] = ayahCount;
+    data['isMakki'] = isMakki;
+    data['audioUrl'] = audioUrl;
+    data['duration'] = duration;
     return data;
   }
 }

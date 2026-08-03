@@ -128,9 +128,9 @@ class _PlayingViewState extends State<PlayingView> {
                     return Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(.08),
+                        color: Colors.white.withValues(alpha: .08),
                         borderRadius: BorderRadius.circular(28),
-                        border: Border.all(color: Colors.white.withOpacity(.1)),
+                        border: Border.all(color: Colors.white.withValues(alpha: .1)),
                       ),
                       child: Column(
                         children: [
@@ -258,7 +258,7 @@ class _PlayingViewState extends State<PlayingView> {
                                         color: Colors.white,
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.white.withOpacity(.2),
+                                            color: Colors.white.withValues(alpha: .2),
                                             blurRadius: 20,
                                             spreadRadius: 2,
                                           ),
@@ -406,8 +406,8 @@ class _PlayingViewState extends State<PlayingView> {
                                             Container(
                                               padding: const EdgeInsets.all(8),
                                               decoration: BoxDecoration(
-                                                color: Colors.white.withOpacity(
-                                                  .15,
+                                                color: Colors.white.withValues(
+                                                  alpha: .15,
                                                 ),
                                                 borderRadius:
                                                     BorderRadius.circular(12),

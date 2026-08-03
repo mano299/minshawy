@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:minshawy/Presentation/views/main_view.dart';
 import 'package:minshawy/core/constants.dart';
 import 'package:flutter_modern_animated_loader/flutter_animated_loader.dart';
 
-import '../cubits/suras_cubit/suras_cubit.dart';
-import 'home_view.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});

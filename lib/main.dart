@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:minshawy/Presentation/cubits/audio_cubit/audio_cubit.dart';
 import 'package:minshawy/Presentation/cubits/suras_cubit/suras_cubit.dart';
-import 'package:minshawy/Presentation/views/home_view.dart';
-import 'package:minshawy/Presentation/views/playing_view.dart';
 import 'package:minshawy/core/constants.dart';
-import 'package:minshawy/data/api_service.dart';
 import 'Presentation/cubits/downloads_cubit/downloads_cubit.dart';
 import 'Presentation/cubits/favorites_cubit/favorites_cubit.dart';
 import 'Presentation/cubits/states_cubit/states_cubit.dart';

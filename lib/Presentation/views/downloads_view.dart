@@ -146,7 +146,7 @@ class _DownloadsViewState extends State<DownloadsView> {
                                       )
                                     : ListView.separated(
                                         itemCount: filteredDownloads.length,
-                                        separatorBuilder: (_, __) =>
+                                        separatorBuilder: (_, _) =>
                                             const SizedBox(height: 12),
                                         itemBuilder: (context, index) {
                                        return   DownloadedSurahItem(

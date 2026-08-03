@@ -3,15 +3,12 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:minshawy/Presentation/views/main_view.dart';
 import 'package:minshawy/core/constants.dart';
 import 'package:minshawy/models/surah_model.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../cubits/audio_cubit/audio_cubit.dart';
 import '../cubits/suras_cubit/suras_cubit.dart';
-import '../widgets/bottom_nav_bar.dart';
 import '../widgets/home_head.dart';
 import '../widgets/last_listen.dart';
 import '../widgets/network_error.dart';
