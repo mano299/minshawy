@@ -13,9 +13,10 @@ import '../widgets/playing_head.dart';
 import '../widgets/playing_surah_info.dart';
 
 class PlayingView extends StatefulWidget {
-  const PlayingView({super.key, required this.surah});
+  const PlayingView({super.key, required this.surah, this.resumeLastPosition = false,});
 
   final SurahModel surah;
+  final bool resumeLastPosition;
 
   @override
   State<PlayingView> createState() => _PlayingViewState();
@@ -23,7 +24,7 @@ class PlayingView extends StatefulWidget {
 
 class _PlayingViewState extends State<PlayingView> {
   double? draggingValue;
-
+  bool _isDownloading = false;
   @override
   void initState() {
     super.initState();
@@ -40,9 +41,16 @@ class _PlayingViewState extends State<PlayingView> {
       final localPath = downloadsCubit.getLocalPath(widget.surah.id!);
 
       if (localPath != null) {
-        await audioCubit.loadAudio(widget.surah, source: localPath);
+        await audioCubit.loadAudio(
+          widget.surah,
+          source: localPath,
+          resumeLastPosition: widget.resumeLastPosition,   // 👈
+        );
       } else {
-        await audioCubit.loadAudio(widget.surah);
+        await audioCubit.loadAudio(
+          widget.surah,
+          resumeLastPosition: widget.resumeLastPosition,   // 👈
+        );
       }
 
       await audioCubit.play();
@@ -386,73 +394,81 @@ class _PlayingViewState extends State<PlayingView> {
                               .isDownloaded(widget.surah.id!);
 
                           return IconButton(
-                            onPressed: isDownloaded
+                            onPressed: (isDownloaded || _isDownloading)
                                 ? null
                                 : () async {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        behavior: SnackBarBehavior.floating,
-                                        backgroundColor: darkBlue,
-                                        elevation: 0,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            18,
-                                          ),
+                              setState(() => _isDownloading = true);
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: darkBlue,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                  margin: const EdgeInsets.all(16),
+                                  duration: const Duration(seconds: 4),
+                                  content: Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withValues(alpha: .15),
+                                          borderRadius: BorderRadius.circular(12),
                                         ),
-                                        margin: const EdgeInsets.all(16),
-                                        duration: const Duration(seconds: 4),
-                                        content: Row(
+                                        child: const Icon(
+                                          Icons.downloading_rounded,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Container(
-                                              padding: const EdgeInsets.all(8),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white.withValues(
-                                                  alpha: .15,
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                              ),
-                                              child: const Icon(
-                                                Icons.downloading_rounded,
+                                            Text(
+                                              'جاري التنزيل',
+                                              style: TextStyle(
                                                 color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15,
                                               ),
                                             ),
-                                            const SizedBox(width: 12),
-                                            Expanded(
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    'جاري التنزيل',
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 15,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    'سورة ${widget.surah.name}\nتابع الإشعارات لمعرفة التقدم',
-                                                    style: TextStyle(
-                                                      color: Colors.white70,
-                                                      fontSize: 13,
-                                                    ),
-                                                  ),
-                                                ],
+                                            Text(
+                                              'سورة ${widget.surah.name}\nتابع الإشعارات لمعرفة التقدم',
+                                              style: TextStyle(
+                                                color: Colors.white70,
+                                                fontSize: 13,
                                               ),
                                             ),
                                           ],
                                         ),
                                       ),
-                                    );
+                                    ],
+                                  ),
+                                ),
+                              );
 
-                                    await context
-                                        .read<DownloadsCubit>()
-                                        .downloadSurah(widget.surah);
-                                  },
-                            icon: FaIcon(
+                              try {
+                                await context.read<DownloadsCubit>().downloadSurah(widget.surah);
+                              } finally {
+                                if (mounted) {
+                                  setState(() => _isDownloading = false);
+                                }
+                              }
+                            },
+                            icon: _isDownloading
+                                ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                color: Colors.white,
+                              ),
+                            )
+                                : FaIcon(
                               isDownloaded
                                   ? FontAwesomeIcons.circleCheck
                                   : FontAwesomeIcons.circleDown,

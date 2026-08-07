@@ -112,6 +112,7 @@ class LastListen extends StatelessWidget {
             onPressed: () async {
 
               final audioCubit = context.read<AudioCubit>();
+              final isCurrentlyPlaying = audioCubit.currentSurah != null;
 
               final surah = audioCubit.currentSurah ??
                   await audioCubit.getLastListen();
@@ -124,6 +125,7 @@ class LastListen extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (_) => PlayingView(
+                    resumeLastPosition: !isCurrentlyPlaying,
                     surah: surah,
                   ),
                 ),

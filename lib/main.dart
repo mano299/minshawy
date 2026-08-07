@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:minshawy/Presentation/cubits/audio_cubit/audio_cubit.dart';
 import 'package:minshawy/Presentation/cubits/suras_cubit/suras_cubit.dart';
 import 'package:minshawy/core/constants.dart';
@@ -13,14 +13,19 @@ import 'data/notifications_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  MediaKit.ensureInitialized();
+
+  await JustAudioBackground.init(
+    androidNotificationChannelId: 'com.minshawy.audio',
+    androidNotificationChannelName: 'Audio Playback',
+    androidNotificationOngoing: true,
+  );
   await Hive.initFlutter();
   await Hive.openBox('stats');
   await Hive.openBox('settings');
   await Hive.openBox<int>('favorites');
   await Hive.openBox('downloads');
 
-  await NotificationService.init();
+  // await NotificationService.init();
 
   runApp(
     MultiBlocProvider(
