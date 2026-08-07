@@ -224,19 +224,18 @@ class _PlayingViewState extends State<PlayingView> {
                                 },
                               ),
 
-                              IconButton(
-                                iconSize: 34,
-                                color: Colors.white,
-                                onPressed: () {
-                                  final newPosition =
-                                      position + const Duration(seconds: 10);
-                                  context.read<AudioCubit>().seek(
-                                    newPosition > duration
-                                        ? duration
-                                        : newPosition,
+                              BlocBuilder<AudioCubit, AudioState>(
+                                builder: (context, state) {
+                                  final audioCubit = context.read<AudioCubit>();
+                                  return IconButton(
+                                    iconSize: 34,
+                                    color: audioCubit.hasNextSurah ? Colors.white : Colors.white30,
+                                    onPressed: audioCubit.hasNextSurah
+                                        ? () => audioCubit.playNextSurah()
+                                        : null,
+                                    icon: const Icon(Icons.skip_next_rounded),
                                   );
                                 },
-                                icon: const Icon(Icons.forward_10_rounded),
                               ),
 
                               SizedBox(
@@ -301,19 +300,18 @@ class _PlayingViewState extends State<PlayingView> {
                                   ],
                                 ),
                               ),
-                              IconButton(
-                                iconSize: 34,
-                                color: Colors.white,
-                                onPressed: () {
-                                  final newPosition =
-                                      position - const Duration(seconds: 10);
-                                  context.read<AudioCubit>().seek(
-                                    newPosition.isNegative
-                                        ? Duration.zero
-                                        : newPosition,
+                              BlocBuilder<AudioCubit, AudioState>(
+                                builder: (context, state) {
+                                  final audioCubit = context.read<AudioCubit>();
+                                  return IconButton(
+                                    iconSize: 34,
+                                    color: audioCubit.hasPreviousSurah ? Colors.white : Colors.white30,
+                                    onPressed: audioCubit.hasPreviousSurah
+                                        ? () => audioCubit.playPreviousSurah()
+                                        : null,
+                                    icon: const Icon(Icons.skip_previous_rounded),
                                   );
                                 },
-                                icon: const Icon(Icons.replay_10_rounded),
                               ),
                               BlocBuilder<AudioCubit, AudioState>(
                                 builder: (context, state) {

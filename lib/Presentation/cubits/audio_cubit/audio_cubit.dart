@@ -188,6 +188,7 @@ class AudioCubit extends Cubit<AudioState> {
       emit(AudioError(e.toString()));
     }
   }
+
   void _listenStreams() {
     _positionSub = player.positionStream.listen((position) {
       _position = position;
@@ -276,6 +277,37 @@ class AudioCubit extends Cubit<AudioState> {
 
     await loadAudio(nextSurah);
     await play();
+  }
+
+  Future<void> playPreviousSurah() async {
+    if (currentSurah == null || currentPlaylist.isEmpty) return;
+
+    final currentIndex = currentPlaylist.indexWhere(
+          (e) => e.id == currentSurah!.id,
+    );
+
+    if (currentIndex == -1) return;
+
+    if (currentIndex - 1 < 0) {
+      return; // أول سورة في القايمة
+    }
+
+    final previousSurah = currentPlaylist[currentIndex - 1];
+
+    await loadAudio(previousSurah);
+    await play();
+  }
+
+  bool get hasNextSurah {
+    if (currentSurah == null || currentPlaylist.isEmpty) return false;
+    final i = currentPlaylist.indexWhere((e) => e.id == currentSurah!.id);
+    return i != -1 && i + 1 < currentPlaylist.length;
+  }
+
+  bool get hasPreviousSurah {
+    if (currentSurah == null || currentPlaylist.isEmpty) return false;
+    final i = currentPlaylist.indexWhere((e) => e.id == currentSurah!.id);
+    return i > 0;
   }
 
   Future<void> play() async {

@@ -13,8 +13,8 @@ class EmptyDownloads extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        SvgPicture.asset(
-          'assets/images/no_downloads.svg',
+        Image.asset(
+          'assets/images/no_downloads.png',
         ),
 
         const SizedBox(height: 32),
