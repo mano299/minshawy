@@ -42,7 +42,8 @@
 * Bloc / Cubit
 * Hive
 * Dio
-* Media Kit
+* Just_audio
+* audio_player
 * Flutter Local Notifications
 * Font Awesome Flutter
 * SVG Support
