@@ -23,9 +23,7 @@ void main() async {
   await Hive.openBox('stats');
   await Hive.openBox('settings');
   await Hive.openBox<int>('favorites');
-  await Hive.openBox('downloads');
-
-  // await NotificationService.init();
+  await Hive.openBox('downloads');  await NotificationService.init();
 
   runApp(
     MultiBlocProvider(

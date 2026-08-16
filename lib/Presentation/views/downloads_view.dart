@@ -107,7 +107,9 @@ class _DownloadsViewState extends State<DownloadsView> {
                             child: CircularProgressIndicator(),
                           );
                         }
-
+                        if (state is DownloadsError) {
+                          return Center(child: Text(state.message));
+                        }
                         if (state is DownloadsEmpty) {
                           return SingleChildScrollView(
                             child: SizedBox(
@@ -124,10 +126,10 @@ class _DownloadsViewState extends State<DownloadsView> {
                           final filteredDownloads = searchText.isEmpty
                               ? downloads
                               : downloads.where((item) {
-                            return item.surahName
-                                .toLowerCase()
-                                .contains(searchText.toLowerCase());
-                          }).toList();
+                                  return item.surahName.toLowerCase().contains(
+                                    searchText.toLowerCase(),
+                                  );
+                                }).toList();
 
                           return Column(
                             children: [
@@ -145,14 +147,18 @@ class _DownloadsViewState extends State<DownloadsView> {
                                         ),
                                       )
                                     : ListView.separated(
+                                        padding: const EdgeInsets.only(
+                                          bottom: 84,
+                                        ),
+
                                         itemCount: filteredDownloads.length,
                                         separatorBuilder: (_, _) =>
                                             const SizedBox(height: 12),
                                         itemBuilder: (context, index) {
-                                       return   DownloadedSurahItem(
-                                         download: filteredDownloads[index],
-                                         allDownloads: filteredDownloads,
-                                       );
+                                          return DownloadedSurahItem(
+                                            download: filteredDownloads[index],
+                                            allDownloads: filteredDownloads,
+                                          );
                                         },
                                       ),
                               ),

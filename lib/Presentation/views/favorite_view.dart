@@ -155,9 +155,14 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                 separatorBuilder: (_, _) =>
                                 const SizedBox(height: 12),
                                 itemBuilder: (context, index) {
+                                  if (index == filteredSuras.length) {
+                                    return const SizedBox(height: 84);
+                                  }
                                   return SurahItem(
                                     surah: filteredSuras[index],
+
                                   );
+
                                 },
                               );
                             }

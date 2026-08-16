@@ -160,6 +160,65 @@ class DownloadedSurahItem extends StatelessWidget {
 
               IconButton(
                 onPressed: () async {
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        backgroundColor: card,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: BorderSide(
+                            color: primaryColor,
+                            width: 1.5,
+                          ),
+                        ),
+                        title: Text(
+                          'تأكيد الحذف',
+                          style: TextStyle(
+                            color: primaryText,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        content: Text(
+                          'هل أنت متأكد أنك تريد حذف سورة ${download.surahName} من التنزيلات؟',
+                          style: TextStyle(
+                            color: secondaryText,
+                            fontSize: 16,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        actionsAlignment: MainAxisAlignment.spaceEvenly,
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context, false);
+                            },
+                            child: Text(
+                              'إلغاء',
+                              style: TextStyle(
+                                color: secondaryText,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                            ),
+                            onPressed: () {
+                              Navigator.pop(context, true);
+                            },
+                            child: const Text('حذف'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+
+                  if (confirm != true) return;
+
                   await context
                       .read<DownloadsCubit>()
                       .removeDownload(download.surahId);

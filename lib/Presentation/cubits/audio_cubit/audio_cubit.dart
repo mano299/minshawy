@@ -251,8 +251,14 @@ class AudioCubit extends Cubit<AudioState> {
       if (autoPlayNext) {
         await playNextSurah();
       } else {
-        emit(AudioPaused(position: _duration, duration: _duration));
-      }
+        _position = _duration;
+
+        emit(
+          AudioPaused(
+            position: _position,
+            duration: _duration,
+          ),
+        );      }
     });
   }
   Future<void> clearLastPosition(int surahId) async {
@@ -347,13 +353,18 @@ class AudioCubit extends Cubit<AudioState> {
   }
 
   Future<void> togglePlayPause() async {
+    if (player.processingState == ProcessingState.completed) {
+      await player.seek(Duration.zero);
+      await play();
+      return;
+    }
+
     if (player.playing) {
       await pause();
     } else {
       await play();
     }
   }
-
   @override
   Future<void> close() async {
     await _positionSub?.cancel();

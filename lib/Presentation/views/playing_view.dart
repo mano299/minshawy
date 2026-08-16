@@ -92,8 +92,16 @@ class _PlayingViewState extends State<PlayingView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 PlayingHead(
-                  onMinimize: () {
-                    Navigator.pop(context);
+                  onMinimize: () async {
+                    FocusScope.of(context).unfocus();
+
+                    await Future.delayed(
+                      const Duration(milliseconds: 50),
+                    );
+
+                    if (mounted) {
+                      Navigator.pop(context);
+                    }
                   },
                 ),
                 const SizedBox(height: 30),
@@ -348,130 +356,151 @@ class _PlayingViewState extends State<PlayingView> {
                   child: Row(
                     mainAxisAlignment: .center,
                     children: [
-                      BlocBuilder<FavoritesCubit, FavoritesState>(
-                        builder: (context, state) {
-                          bool isFavorite = false;
+                      BlocBuilder<AudioCubit, AudioState>(
+                        builder: (context, audioState) {
+                          final currentSurah =
+                              context.read<AudioCubit>().currentSurah ?? widget.surah;
 
-                          if (state is FavoritesLoaded) {
-                            isFavorite = state.favoriteIds.contains(
-                              widget.surah.id,
-                            );
-                          }
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 48.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                BlocBuilder<FavoritesCubit, FavoritesState>(
+                                  builder: (context, state) {
+                                    bool isFavorite = false;
 
-                          return IconButton(
-                            onPressed: () {
-                              context.read<FavoritesCubit>().toggleFavorite(
-                                widget.surah.id!,
-                              );
+                                    if (state is FavoritesLoaded) {
+                                      isFavorite = state.favoriteIds.contains(
+                                        currentSurah.id,
+                                      );
+                                    }
 
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    isFavorite
-                                        ? 'تمت إزالة ${widget.surah.name} من سورك المفضلة'
-                                        : 'تمت إضافة ${widget.surah.name} إلى سورك المفضلة',
-                                  ),
+                                    return IconButton(
+                                      onPressed: () {
+                                        context.read<FavoritesCubit>().toggleFavorite(
+                                          currentSurah.id!,
+                                        );
+
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              isFavorite
+                                                  ? 'تمت إزالة ${currentSurah.name} من سورك المفضلة'
+                                                  : 'تمت إضافة ${currentSurah.name} إلى سورك المفضلة',
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      icon: FaIcon(
+                                        isFavorite
+                                            ? FontAwesomeIcons.solidBookmark
+                                            : FontAwesomeIcons.bookmark,
+                                        color: Colors.white,
+                                        size: 32,
+                                      ),
+                                    );
+                                  },
                                 ),
-                              );
-                            },
-                            icon: FaIcon(
-                              isFavorite
-                                  ? FontAwesomeIcons.solidBookmark
-                                  : FontAwesomeIcons.bookmark,
-                              color: Colors.white,
-                              size: 32,
-                            ),
-                          );
-                        },
-                      ),
-                      SizedBox(width: 32),
-                      BlocBuilder<DownloadsCubit, DownloadsState>(
-                        builder: (context, state) {
-                          final isDownloaded = context
-                              .read<DownloadsCubit>()
-                              .isDownloaded(widget.surah.id!);
 
-                          return IconButton(
-                            onPressed: (isDownloaded || _isDownloading)
-                                ? null
-                                : () async {
-                              setState(() => _isDownloading = true);
+                                const SizedBox(width: 32),
 
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  behavior: SnackBarBehavior.floating,
-                                  backgroundColor: darkBlue,
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(18),
-                                  ),
-                                  margin: const EdgeInsets.all(16),
-                                  duration: const Duration(seconds: 4),
-                                  content: Row(
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white.withValues(alpha: .15),
-                                          borderRadius: BorderRadius.circular(12),
-                                        ),
-                                        child: const Icon(
-                                          Icons.downloading_rounded,
+                                BlocBuilder<DownloadsCubit, DownloadsState>(
+                                  builder: (context, state) {
+                                    final isDownloaded = context
+                                        .read<DownloadsCubit>()
+                                        .isDownloaded(currentSurah.id!);
+
+                                    return IconButton(
+                                      onPressed: (isDownloaded || _isDownloading)
+                                          ? null
+                                          : () async {
+                                        setState(() => _isDownloading = true);
+
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            behavior: SnackBarBehavior.floating,
+                                            backgroundColor: darkBlue,
+                                            elevation: 0,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(18),
+                                            ),
+                                            margin: const EdgeInsets.all(16),
+                                            duration: const Duration(seconds: 4),
+                                            content: Row(
+                                              children: [
+                                                Container(
+                                                  padding: const EdgeInsets.all(8),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white.withValues(alpha: .15),
+                                                    borderRadius: BorderRadius.circular(12),
+                                                  ),
+                                                  child: const Icon(
+                                                    Icons.downloading_rounded,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 12),
+                                                Expanded(
+                                                  child: Column(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                    children: [
+                                                      const Text(
+                                                        'جاري التنزيل',
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight.bold,
+                                                          fontSize: 15,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        'سورة ${currentSurah.name}\nتابع الإشعارات لمعرفة التقدم',
+                                                        style: const TextStyle(
+                                                          color: Colors.white70,
+                                                          fontSize: 13,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+
+                                        try {
+                                          await context
+                                              .read<DownloadsCubit>()
+                                              .downloadSurah(currentSurah);
+                                        } finally {
+                                          if (mounted) {
+                                            setState(() => _isDownloading = false);
+                                          }
+                                        }
+                                      },
+                                      icon: _isDownloading
+                                          ? const SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2.5,
                                           color: Colors.white,
                                         ),
+                                      )
+                                          : FaIcon(
+                                        isDownloaded
+                                            ? FontAwesomeIcons.circleCheck
+                                            : FontAwesomeIcons.circleDown,
+                                        color:
+                                        isDownloaded ? Colors.green : Colors.white,
+                                        size: 32,
                                       ),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'جاري التنزيل',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 15,
-                                              ),
-                                            ),
-                                            Text(
-                                              'سورة ${widget.surah.name}\nتابع الإشعارات لمعرفة التقدم',
-                                              style: TextStyle(
-                                                color: Colors.white70,
-                                                fontSize: 13,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    );
+                                  },
                                 ),
-                              );
-
-                              try {
-                                await context.read<DownloadsCubit>().downloadSurah(widget.surah);
-                              } finally {
-                                if (mounted) {
-                                  setState(() => _isDownloading = false);
-                                }
-                              }
-                            },
-                            icon: _isDownloading
-                                ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.5,
-                                color: Colors.white,
-                              ),
-                            )
-                                : FaIcon(
-                              isDownloaded
-                                  ? FontAwesomeIcons.circleCheck
-                                  : FontAwesomeIcons.circleDown,
-                              color: isDownloaded ? Colors.green : Colors.white,
-                              size: 32,
+                              ],
                             ),
                           );
                         },

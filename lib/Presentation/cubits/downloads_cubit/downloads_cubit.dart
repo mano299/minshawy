@@ -35,6 +35,8 @@ class DownloadsCubit extends Cubit<DownloadsState> {
       ),
     )
         .toList();
+    print('Loaded downloads: ${data.length}');
+    print(data);
 
     _downloads = data;
 
@@ -124,6 +126,8 @@ class DownloadsCubit extends Cubit<DownloadsState> {
         surah.id,
         download.toJson(),
       );
+      print('Saved download: ${download.surahName}');
+      print('Box length: ${box.length}');
 
       await NotificationService.complete(
         'سورة ${surah.name}',
