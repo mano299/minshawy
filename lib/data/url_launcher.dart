@@ -4,10 +4,9 @@ import 'package:url_launcher/url_launcher.dart';
 Future<void> launchUrlLink(String url) async {
   final uri = Uri.parse(url);
 
-  if (await canLaunchUrl(uri)) {
-    await launchUrl(
-      uri,
-      mode: LaunchMode.externalApplication,
-    );
+  try {
+    await launchUrl(uri);
+  } catch (e) {
+    print('Error: $e');
   }
 }
