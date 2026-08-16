@@ -117,9 +117,9 @@ Flutter Developer | Computer Science Student
 
 ### تواصل معي
 
-* LinkedIn: [Your LinkedIn Profile]
-* Email: [Your Email]
-* WhatsApp: [Your WhatsApp Number]
+* LinkedIn: www.linkedin.com/in/muhammedahmedabdelhadi
+* Email: muhammed.abdelhadi9@gmail.com
+* WhatsApp: +201090820457
 
 ---
 
