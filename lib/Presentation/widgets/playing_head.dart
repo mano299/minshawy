@@ -14,14 +14,14 @@ class PlayingHead extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        IconButton(
-          onPressed: () {},
-          icon: const FaIcon(
-            FontAwesomeIcons.ellipsisVertical,
-            size: 28,
-            color: Colors.white,
-          ),
-        ),
+        // IconButton(
+        //   onPressed: () {},
+        //   icon: const FaIcon(
+        //     FontAwesomeIcons.ellipsisVertical,
+        //     size: 28,
+        //     color: Colors.white,
+        //   ),
+        // ),
 
         IconButton(
           onPressed: onMinimize,

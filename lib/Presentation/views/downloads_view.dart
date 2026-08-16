@@ -58,7 +58,7 @@ class _DownloadsViewState extends State<DownloadsView> {
                     ),
                   ),
 
-                  const SizedBox(height: 8),
+                  SizedBox(height: 24),
 
                   SearchField(
                     controller: searchController,
