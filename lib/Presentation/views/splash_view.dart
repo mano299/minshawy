@@ -35,7 +35,7 @@ class _SplashViewState extends State<SplashView> {
                 SizedBox(height: 28),
                 Text(
                   textAlign: TextAlign.center,
-                  'المصحف المرتل الثاني\n للشيخ المنشاوي',
+                  'مصحف المنشاوي',
                   style: TextStyle(
                     height: 1.8,
                     color: Colors.white,
@@ -43,7 +43,7 @@ class _SplashViewState extends State<SplashView> {
                     fontSize: 24,
                   ),
                 ),
-                SizedBox(height: 64),
+                SizedBox(height: 72),
                 Text(
                   textAlign: TextAlign.center,
                   'كِتَابٌ أَنزَلْنَاهُ إِلَيْكَ مُبَارَكٌ لِّيَدَّبَّرُوا آيَاتِهِ وَلِيَتَذَكَّرَ أُولُو الْأَلْبَابِ',
@@ -54,7 +54,7 @@ class _SplashViewState extends State<SplashView> {
                   ),
                   softWrap: true,
                 ),
-                SizedBox(height: 82),
+                SizedBox(height: 124),
                 Image.asset('assets/images/moshaf.png', width: 50, height: 45),
                 SizedBox(height: 8),
                 FlutterAnimatedLoader.pulseTrack(
