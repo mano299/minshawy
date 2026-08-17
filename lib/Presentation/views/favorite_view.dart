@@ -151,6 +151,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                               }).toList();
 
                               return ListView.separated(
+                                padding: const EdgeInsets.only(bottom: 84),
                                 itemCount: filteredSuras.length,
                                 separatorBuilder: (_, _) =>
                                 const SizedBox(height: 12),
@@ -160,7 +161,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                   }
                                   return SurahItem(
                                     surah: filteredSuras[index],
-
+                                    playlist: filteredSuras,
                                   );
 
                                 },

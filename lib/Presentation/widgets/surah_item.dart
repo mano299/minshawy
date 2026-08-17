@@ -11,10 +11,10 @@ import '../cubits/favorites_cubit/favorites_cubit.dart';
 import '../cubits/favorites_cubit/favorites_state.dart';
 
 class SurahItem extends StatelessWidget {
-  const SurahItem({super.key, required this.surah});
+  const SurahItem({super.key, required this.surah, this.playlist});
 
   final SurahModel surah;
-
+  final List<SurahModel>? playlist;
   @override
   Widget build(BuildContext context) {
     return Container(

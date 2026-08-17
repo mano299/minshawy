@@ -42,6 +42,7 @@ class AudioCubit extends Cubit<AudioState> {
   SurahModel? currentSurah;
   bool repeatOne = false;
   bool _isSeeking = false;
+  int _loadGeneration = 0;
   List<SurahModel> surahs = [];
   List<SurahModel> currentPlaylist = [];
 
@@ -113,13 +114,15 @@ class AudioCubit extends Cubit<AudioState> {
   Future<void> loadAudio(
       SurahModel surah, {
         String? source,
-        bool resumeLastPosition = false,   // 👈 جديد، default false
+        bool resumeLastPosition = false,
       }) async {
     try {
       if (currentSurah?.id == surah.id &&
           (player.duration ?? Duration.zero) > Duration.zero) {
         return;
       }
+
+      final myGeneration = ++_loadGeneration;   // 👈 جديد
 
       _positionSub?.cancel();
       _playingSub?.cancel();
@@ -169,7 +172,8 @@ class AudioCubit extends Cubit<AudioState> {
               Duration.zero;
       _duration = player.duration ?? Duration.zero;
 
-      // 👇 الشرط الجديد: يستنى ياخد آخر بوزيشن بس لو resumeLastPosition = true
+      if (myGeneration != _loadGeneration) return;   // 👈 جديد
+
       if (resumeLastPosition) {
         final lastPosition = getLastPosition(surah.id!);
         if (lastPosition > Duration.zero &&
@@ -179,9 +183,10 @@ class AudioCubit extends Cubit<AudioState> {
           _position = player.position;
         }
       }
-      // لو resumeLastPosition = false، هتبدأ من صفر تلقائيًا (زي ما هي فوق بالفعل)
 
-      _listenStreams();
+      if (myGeneration != _loadGeneration) return;   // 👈 جديد (كمان بعد الـ seek احتياطًا)
+
+      _listenStreams(myGeneration);   // 👈 عدّلت هنا، كانت _listenStreams()
 
       emit(AudioPaused(position: _position, duration: _duration));
     } catch (e) {
@@ -189,15 +194,17 @@ class AudioCubit extends Cubit<AudioState> {
     }
   }
 
-  void _listenStreams() {
+  void _listenStreams(int generation) {   // 👈 عدّلت التوقيع، كان void _listenStreams()
     _positionSub = player.positionStream.listen((position) {
+      if (generation != _loadGeneration) return;   // 👈 جديد
+
       _position = position;
 
       if (currentSurah?.id != null) {
         saveLastPosition(currentSurah!.id!, position);
       }
 
-      if (_isSeeking) return;   // 👈 جديد
+      if (_isSeeking) return;
 
       if (player.playing) {
         emit(AudioPlaying(position: _position, duration: _duration));
@@ -207,11 +214,13 @@ class AudioCubit extends Cubit<AudioState> {
     });
 
     _bufferingSub = player.playerStateStream.listen((state) {
+      if (generation != _loadGeneration) return;   // 👈 جديد
+
       if (state.processingState == ProcessingState.loading ||
           state.processingState == ProcessingState.buffering) {
         emit(AudioBuffering(position: _position, duration: _duration));
       } else {
-        if (_isSeeking) return;   // 👈 جديد — سيب seek() هي اللي تحدد الحالة النهائية
+        if (_isSeeking) return;
 
         if (player.playing) {
           emit(AudioPlaying(position: _position, duration: _duration));
@@ -222,7 +231,9 @@ class AudioCubit extends Cubit<AudioState> {
     });
 
     _playingSub = player.playingStream.listen((playing) {
-      if (_isSeeking) return;   // 👈 جديد
+      if (generation != _loadGeneration) return;   // 👈 جديد
+
+      if (_isSeeking) return;
 
       if (playing) {
         emit(AudioPlaying(position: _position, duration: _duration));
@@ -233,7 +244,8 @@ class AudioCubit extends Cubit<AudioState> {
 
     _completedSub?.cancel();
     _completedSub = player.playerStateStream.listen((state) async {
-      // زي ما هي من غير تغيير
+      if (generation != _loadGeneration) return;   // 👈 أهم سطر، جديد
+
       if (state.processingState != ProcessingState.completed) {
         return;
       }
@@ -258,7 +270,8 @@ class AudioCubit extends Cubit<AudioState> {
             position: _position,
             duration: _duration,
           ),
-        );      }
+        );
+      }
     });
   }
   Future<void> clearLastPosition(int surahId) async {
@@ -267,24 +280,25 @@ class AudioCubit extends Cubit<AudioState> {
   }
 
   Future<void> playNextSurah() async {
-    if (currentSurah == null || currentPlaylist.isEmpty) return;
+    if (currentSurah == null) return;
 
-    final currentIndex = currentPlaylist.indexWhere(
-      (e) => e.id == currentSurah!.id,
-    );
+    int currentIndex = currentPlaylist.indexWhere((e) => e.id == currentSurah!.id);
 
-    if (currentIndex == -1) return;
-
-    if (currentIndex + 1 >= currentPlaylist.length) {
-      return; // آخر سورة
+    if (currentIndex == -1) {
+      // fallback: السورة مش موجودة في البلاي ليست الحالية (يبقى الشاشة اتفتحت من مكان تاني)
+      if (surahs.isNotEmpty) {
+        currentPlaylist = surahs;
+        currentIndex = currentPlaylist.indexWhere((e) => e.id == currentSurah!.id);
+      }
+      if (currentIndex == -1) return;
     }
 
-    final nextSurah = currentPlaylist[currentIndex + 1];
+    if (currentIndex + 1 >= currentPlaylist.length) return;
 
+    final nextSurah = currentPlaylist[currentIndex + 1];
     await loadAudio(nextSurah);
     await play();
   }
-
   Future<void> playPreviousSurah() async {
     if (currentSurah == null || currentPlaylist.isEmpty) return;
 
