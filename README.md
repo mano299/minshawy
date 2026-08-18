@@ -24,10 +24,8 @@
 
 ## 📱 لقطات من التطبيق
 
-> أضف صور التطبيق بعد رفعها إلى المستودع.
-
 ```md
-![Home](screenshots/home.png)
+![Home](assets/screenshots/1.png)
 ![Playing](screenshots/playing.png)
 ![Downloads](screenshots/downloads.png)
 ![About](screenshots/about.png)
