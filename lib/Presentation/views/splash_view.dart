@@ -28,7 +28,7 @@ class _SplashViewState extends State<SplashView> {
     return Scaffold(
           backgroundColor: darkBlue,
           body: Padding(
-            padding: EdgeInsets.only(top: 72.0, left: 24, right: 24),
+            padding: EdgeInsets.only(top: 82.0, left: 24, right: 24),
             child: Column(
               children: [
                 Image.asset('assets/images/logo.png', width: 214, height: 214),
@@ -40,10 +40,10 @@ class _SplashViewState extends State<SplashView> {
                     height: 1.8,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 24,
+                    fontSize: 28,
                   ),
                 ),
-                SizedBox(height: 72),
+                SizedBox(height: 80),
                 Text(
                   textAlign: TextAlign.center,
                   'كِتَابٌ أَنزَلْنَاهُ إِلَيْكَ مُبَارَكٌ لِّيَدَّبَّرُوا آيَاتِهِ وَلِيَتَذَكَّرَ أُولُو الْأَلْبَابِ',
