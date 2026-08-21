@@ -140,7 +140,7 @@ class AudioCubit extends Cubit<AudioState> {
       final artUri = await _getArtUri();
 
       if (source != null) {
-        await player.setAudioSource(
+        final duration = await player.setAudioSource(
           AudioSource.uri(
             Uri.file(source),
             tag: MediaItem(
@@ -152,8 +152,9 @@ class AudioCubit extends Cubit<AudioState> {
             ),
           ),
         );
+        _duration = duration ?? Duration.zero;
       } else {
-        await player.setAudioSource(
+        final duration = await player.setAudioSource(
           AudioSource.uri(
             Uri.parse(surah.audioUrl!),
             tag: MediaItem(
@@ -165,7 +166,10 @@ class AudioCubit extends Cubit<AudioState> {
             ),
           ),
         );
+        _duration = duration ?? Duration.zero;
       }
+
+      if (myGeneration != _loadGeneration) return;
 
       _duration =
           await player.durationStream.firstWhere((d) => d != null) ??
