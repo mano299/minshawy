@@ -195,6 +195,7 @@ class AudioCubit extends Cubit<AudioState> {
       emit(AudioPaused(position: _position, duration: _duration));
     } catch (e) {
       emit(AudioError(e.toString()));
+      rethrow;
     }
   }
 
@@ -287,23 +288,32 @@ class AudioCubit extends Cubit<AudioState> {
     if (currentSurah == null) return;
 
     int currentIndex = currentPlaylist.indexWhere((e) => e.id == currentSurah!.id);
-
     if (currentIndex == -1) {
-      // fallback: السورة مش موجودة في البلاي ليست الحالية (يبقى الشاشة اتفتحت من مكان تاني)
       if (surahs.isNotEmpty) {
         currentPlaylist = surahs;
         currentIndex = currentPlaylist.indexWhere((e) => e.id == currentSurah!.id);
       }
       if (currentIndex == -1) return;
     }
-
     if (currentIndex + 1 >= currentPlaylist.length) return;
 
     final nextSurah = currentPlaylist[currentIndex + 1];
-    await loadAudio(nextSurah);
-    await play();
-  }
-  Future<void> playPreviousSurah() async {
+
+    const maxRetries = 3;
+    for (var attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        await loadAudio(nextSurah);
+        await play();
+        return;
+      } catch (e) {
+        if (attempt == maxRetries) {
+          emit(AudioError('تعذر تشغيل ${nextSurah.name} بعد عدة محاولات'));
+          return;
+        }
+        await Future.delayed(Duration(seconds: attempt * 2)); // backoff بسيط
+      }
+    }
+  }  Future<void> playPreviousSurah() async {
     if (currentSurah == null || currentPlaylist.isEmpty) return;
 
     final currentIndex = currentPlaylist.indexWhere(
